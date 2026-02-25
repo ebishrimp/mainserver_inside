@@ -1,0 +1,4 @@
+AuthUserfile "/var/www/inside/.htaccess"
+AuthName "ikafly"
+AuthType Basic
+Require valid-user
