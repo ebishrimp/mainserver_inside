@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inside Dashboard - えびてんホームページ</title>
+    <link rel="stylesheet" href="/sites/css/main.css">
+    <style>
+        .secret-content {
+            margin-top: 50px;
+            padding: 30px;
+            background: #fff;
+            border-left: 8px solid #ff4757;
+            border-radius: 8px;
+        }
+        .logout-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff4757;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        @media (prefers-color-scheme: dark) {
+            .secret-content {
+                background: #1e1e1e;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <h1 class="main-title">Inside Area</h1>
+            <p>管理者：ikafly 専用コントロールパネル</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="secret-content">
+            <h2>認証成功 🔓</h2>
+            <p>現在、管理用ディレクトリの内部にアクセスしています。</p>
+            
+            <div class="card-grid" style="margin-top: 30px;">
+                <div class="card">
+                    <div class="card-content">
+                        <h3>サーバーログ</h3>
+                        <p>自宅サーバーの最新稼働状況を確認できます。</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>秘密のメモ</h3>
+                        <p>公開前のPCレビュー下書きなど。</p>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/logout" class="logout-link">→ ログアウトしてセッションを終了</a>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Inside Section - Private</p>
+    </footer>
+</body>
+</html>
