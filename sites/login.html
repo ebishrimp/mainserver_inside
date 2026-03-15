@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inside Login - えびてんホームページ</title>
+    <link rel="stylesheet" href="/sites/css/main.css">
+    <style>
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .login-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: var(--primary-blue);
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .login-button:hover {
+            opacity: 0.9;
+        }
+        .back-home {
+            margin-top: 20px;
+            display: block;
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container login-wrapper">
+        <div class="login-box">
+            <h1 class="main-title" style="font-size: 2rem;">Inside Area</h1>
+            <p>これより先は認可されたユーザーのみ閲覧可能です</p>
+            
+            <form action="/login" method="POST">
+                <div class="input-group">
+                    <label for="username">User ID</label>
+                    <input type="text" id="username" name="username" required autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="login-button">認証して進む</button>
+            </form>
+
+            <a href="https://ebishrimp.com" class="back-home">← メインサイトへ戻る</a>
+        </div>
+    </div>
+</body>
+</html>
