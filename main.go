@@ -9,7 +9,7 @@ import (
 // 本来はDBや環境変数で管理
 const (
 	AdminUser    = "ikafly"
-	AdminPass    = "change_after_deploy"
+	AdminPass    = "already_set_true_password"
 	CookieName   = "inside_session"
 	SessionValue = "authenticated_user_shrimp" // 簡易的な固定トークン
 )
