@@ -1,20 +1,28 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
 // 本来はDBや環境変数で管理
 const (
-	AdminUser    = "ikafly"
-	AdminPass    = "already_set_true_password"
 	CookieName   = "inside_session"
 	SessionValue = "authenticated_user_shrimp" // 簡易的な固定トークン
 )
 
+var sitesServe = http.FileServer(http.Dir("/sites/"))
+
+var users map[string]string
+
 func main() {
+	users = make(map[string]string)
+	loadenv("./.env")
 	// ルーティング
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/", authMiddleware(indexHandler)) // 認証が必要なページ
@@ -22,6 +30,28 @@ func main() {
 
 	fmt.Println("Server starting at :8080...")
 	http.ListenAndServe(":8080", nil)
+}
+
+func loadenv(path string) {
+	f, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			continue
+		}
+		pair := strings.Split("|", line)
+		if len(pair) != 2 {
+			fmt.Printf("User %s cannot parse\n", pair[0])
+		}
+		users[pair[0]] = pair[1]
+	}
+	scanner.Err()
 }
 
 // 認証チェック用ミドルウェア
@@ -48,7 +78,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("username")
 	pass := r.FormValue("password")
 
-	if user == AdminUser && pass == AdminPass {
+	realpass := users[user]
+
+	if pass == realpass && realpass != "" {
 		// Cookieをセット
 		http.SetCookie(w, &http.Cookie{
 			Name:     CookieName,
@@ -58,13 +90,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			Expires:  time.Now().Add(24 * time.Hour),
 		})
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if realpass == "" {
+		fmt.Fprintf(w, "パスワードが設定されていないためログインできません")
 	} else {
 		fmt.Fprintf(w, "認証失敗: ユーザー名かパスワードが違います")
 	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "sites/index.html")
+	http.StripPrefix("/", sitesServe)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
