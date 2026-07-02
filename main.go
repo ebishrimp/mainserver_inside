@@ -27,7 +27,7 @@ func main() {
 	users = make(map[string]string)
 	loadenv("./.env")
 
-	wikiURL, err := url.Parse("https://localhost:8001")
+	wikiURL, err := url.Parse("http://localhost:8001")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func main() {
 	// ルーティング
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/sites", authMiddleware(indexHandler)) // 認証が必要なページ
-	http.HandleFunc("/sites/pukiwiki", authMiddleware(wikiHandler))
+	http.HandleFunc("/pukiwiki", authMiddleware(wikiHandler))
 	http.HandleFunc("/logout", logoutHandler)
 
 	fmt.Println("Server starting at :8080...")
@@ -102,7 +102,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		http.Redirect(w, r, "/sites", http.StatusSeeOther)
 	} else if realpass == "" {
-		fmt.Fprintf(w, "パスワードが設定されていないためログインできません")
+		fmt.Fprintf(w, "パスワードまたはユーザーが設定されていないためログインできません")
 	} else {
 		fmt.Fprintf(w, "認証失敗: ユーザー名かパスワードが違います")
 	}
@@ -123,5 +123,5 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wikiHandler(w http.ResponseWriter, r *http.Request) {
-	http.StripPrefix("/sites/pukiwiki", wikiProxy).ServeHTTP(w, r)
+	http.StripPrefix("/pukiwiki", wikiProxy).ServeHTTP(w, r)
 }
