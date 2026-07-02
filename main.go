@@ -34,8 +34,8 @@ func main() {
 	wikiProxy = httputil.NewSingleHostReverseProxy(wikiURL)
 	// ルーティング
 	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/sites", authMiddleware(indexHandler)) // 認証が必要なページ
-	http.HandleFunc("/pukiwiki", authMiddleware(wikiHandler))
+	http.HandleFunc("/sites/", authMiddleware(indexHandler)) // 認証が必要なページ
+	http.HandleFunc("/pukiwiki/", authMiddleware(wikiHandler))
 	http.HandleFunc("/logout", logoutHandler)
 
 	fmt.Println("Server starting at :8080...")
@@ -100,7 +100,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true, // セキュリティ向上（JSからアクセス不可）
 			Expires:  time.Now().Add(24 * time.Hour),
 		})
-		http.Redirect(w, r, "/sites", http.StatusSeeOther)
+		http.Redirect(w, r, "/sites/", http.StatusSeeOther)
 	} else if realpass == "" {
 		fmt.Fprintf(w, "パスワードまたはユーザーが設定されていないためログインできません")
 	} else {
@@ -109,7 +109,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.StripPrefix("/sites", sitesServe).ServeHTTP(w, r)
+	http.StripPrefix("/sites/", sitesServe).ServeHTTP(w, r)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,5 +123,5 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wikiHandler(w http.ResponseWriter, r *http.Request) {
-	http.StripPrefix("/pukiwiki", wikiProxy).ServeHTTP(w, r)
+	http.StripPrefix("/pukiwiki/", wikiProxy).ServeHTTP(w, r)
 }
