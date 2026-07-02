@@ -16,7 +16,7 @@ const (
 	SessionValue = "authenticated_user_shrimp" // 簡易的な固定トークン
 )
 
-var sitesServe = http.FileServer(http.Dir("/sites/"))
+var sitesServe = http.FileServer(http.Dir("./sites/"))
 
 var users map[string]string
 
@@ -25,7 +25,7 @@ func main() {
 	loadenv("./.env")
 	// ルーティング
 	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/", authMiddleware(indexHandler)) // 認証が必要なページ
+	http.HandleFunc("/sites/", authMiddleware(indexHandler)) // 認証が必要なページ
 	http.HandleFunc("/logout", logoutHandler)
 
 	fmt.Println("Server starting at :8080...")
@@ -90,7 +90,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true, // セキュリティ向上（JSからアクセス不可）
 			Expires:  time.Now().Add(24 * time.Hour),
 		})
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/sites/", http.StatusSeeOther)
 	} else if realpass == "" {
 		fmt.Fprintf(w, "パスワードが設定されていないためログインできません")
 	} else {
@@ -99,7 +99,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.StripPrefix("/", sitesServe)
+	http.StripPrefix("/sites/", sitesServe).ServeHTTP(w, r)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
