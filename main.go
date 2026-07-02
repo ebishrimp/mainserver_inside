@@ -45,9 +45,10 @@ func loadenv(path string) {
 		if line == "" {
 			continue
 		}
-		pair := strings.Split("|", line)
+		pair := strings.Split(line, "|")
 		if len(pair) != 2 {
 			fmt.Printf("User %s cannot parse\n", pair[0])
+			continue
 		}
 		users[pair[0]] = pair[1]
 	}
