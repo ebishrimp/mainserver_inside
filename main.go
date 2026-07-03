@@ -34,6 +34,7 @@ func main() {
 	wikiProxy = httputil.NewSingleHostReverseProxy(wikiURL)
 	// ルーティング
 	http.HandleFunc("inside.ebishrimp.com/login", loginHandler)
+	http.HandleFunc("wiki.ebishrimp.com/login", loginHandler)
 	http.HandleFunc("inside.ebishrimp.com/", authMiddleware(indexHandler)) // 認証が必要なページ
 	http.HandleFunc("wiki.ebishrimp.com/", authMiddleware(wikiHandler))
 	http.HandleFunc("inside.ebishrimp.com/logout", logoutHandler)
@@ -70,7 +71,7 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie(CookieName)
 		if err != nil || cookie.Value != SessionValue {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "inside.ebishrimp.com/login", http.StatusSeeOther)
 			return
 		}
 		next(w, r)
@@ -97,10 +98,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			Name:     CookieName,
 			Value:    SessionValue,
 			Path:     "/",
+			Domain:   ".ebishrimp.com",
 			HttpOnly: true, // セキュリティ向上（JSからアクセス不可）
 			Expires:  time.Now().Add(24 * time.Hour),
 		})
-		http.Redirect(w, r, "sites/", http.StatusSeeOther)
+		if r.Host == "wiki.ebishrimp.com" {
+			http.Redirect(w, r, "/", http.StatusSeeOther) // Wikiのトップへ戻す
+		} else {
+			http.Redirect(w, r, "/sites/", http.StatusSeeOther) // 本体のメインページへ戻す
+		}
 	} else if realpass == "" {
 		fmt.Fprintf(w, "パスワードまたはユーザーが設定されていないためログインできません")
 	} else {
@@ -117,6 +123,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		Name:   CookieName,
 		Value:  "",
 		Path:   "/",
+		Domain: ".ebishrimp.com",
 		MaxAge: -1,
 	})
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
