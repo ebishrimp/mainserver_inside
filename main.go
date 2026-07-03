@@ -38,6 +38,7 @@ func main() {
 	http.HandleFunc("inside.ebishrimp.com/", authMiddleware(indexHandler)) // 認証が必要なページ
 	http.HandleFunc("wiki.ebishrimp.com/", authMiddleware(wikiHandler))
 	http.HandleFunc("inside.ebishrimp.com/logout", logoutHandler)
+	http.HandleFunc("wiki.ebishrimp.com/logout", logoutHandler)
 
 	fmt.Println("Server starting at :8080...")
 	http.ListenAndServe(":8080", nil)
@@ -71,7 +72,7 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie(CookieName)
 		if err != nil || cookie.Value != SessionValue {
-			http.Redirect(w, r, "inside.ebishrimp.com/login", http.StatusSeeOther)
+			http.Redirect(w, r, "https://inside.ebishrimp.com/login", http.StatusSeeOther)
 			return
 		}
 		next(w, r)
@@ -126,7 +127,11 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		Domain: ".ebishrimp.com",
 		MaxAge: -1,
 	})
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	if r.Host == "wiki.ebishrimp.com" {
+		http.Redirect(w, r, "https://wiki.ebishrimp.com/login", http.StatusSeeOther) // Wikiのトップへ戻す
+	} else {
+		http.Redirect(w, r, "https://inside.ebishrimp.com/login", http.StatusSeeOther) // 本体のメインページへ戻す
+	}
 }
 
 func wikiHandler(w http.ResponseWriter, r *http.Request) {
